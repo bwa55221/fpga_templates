@@ -1,17 +1,33 @@
+proc readfile {filename} {
+    set fp [open $filename r]
+    set lines [split [read $fp] "\n"]
+    # puts $lines
+    close $fp
+
+    foreach line $lines {
+        if {[regexp {^[^#\r\n].*(?==)} $line var]} {
+
+            if {[regexp {=.*$} $line val]} {
+                set val [string trim $val "="]
+                regsub -all {\\} $val / val
+                puts "set $var $val"
+                variable $var $val
+            }
+        } 
+    }
+}
+
+# parse parameters file to get user params
+readfile params.txt
+
 ####################################################################################
 ############################# DEFINE USER PARAMS ###################################
 ####################################################################################
 
-set SOURCE_DIR "C:/Users/Brandon/Documents/Git_Repositories/ssl_debug"
-# set FSS_HDL_DIR "C:/Users/Brandon/Documents/Git_Repositories/fss_logic"
-# set IP_DIR "C:/Users/Brandon/Documents/Git_Repositories/ssl_debug/synthesis/ip"
-set PROJ_NAME "simulation_proj"
-set TOP_LEVEL_FILE "avmm_sync"
-
 # note: the overwrite flag overwrites any .qsf if it exists
 project_new ${PROJ_NAME} -overwrite 
 
-set_global_assignment -name TOP_LEVEL_ENTITY ${TOP_LEVEL_FILE}
+# set_global_assignment -name TOP_LEVEL_ENTITY ${TOP_LEVEL_FILE}
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
@@ -30,7 +46,7 @@ set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulati
 ################################# ADD FILES ########################################
 ####################################################################################
 
-set_global_assignment -name VHDL_FILE "${SOURCE_DIR}/hdl/avmm_sync.vhd"
+set_global_assignment -name VHDL_FILE "${SOURCE_CODE_DIR}/hdl/avmm_sync.vhd"
 
 
 # set_global_assignment -name QSYS_FILE "${SOURCE_DIR}/synthesis/pcie_sys.qsys"
