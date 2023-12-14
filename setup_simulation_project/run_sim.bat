@@ -1,27 +1,23 @@
 @REM @echo off
 
-:: setup directory structures
-SET SETUP_DIR=C:\Users\Brandon\Documents\Git_Repositories\fpga_templates\setup_simulation_project
-
-:: setup directory for simulator artifacts
-SET SIM_DIR=C:\Users\Brandon\Documents\Git_Repositories\ssl_debug\simulation
+:: setup directory structures from file
+for /f "delims== tokens=1,2 EOL=#" %%G in (sim_params.txt) do set %%G=%%H
 
 :: check if questa path exists, add to path
-IF EXIST :\intelFPGA_pro\23.3\questa_fe\win64 SET PATH=%PATH%;C:\intelFPGA_pro\23.3\questa_fe\win64
+IF EXIST %QUESTA_BINARY_DIR% SET PATH=%PATH%;%QUESTA_BINARY_DIR%
+
+:: copy sim params into simulation artifact directory
+xcopy params.txt %SIM_ARTIFACTS_DIR%
 
 :: move to simulation directory
-cd %SIM_DIR%
+cd %SIM_ARTIFACTS_DIR%
 
 :: start Questa simulator, run simulator setup script
-start "" vsim.exe -do "%SETUP_DIR%\simulation_script.tcl" 
+start "" vsim.exe -do "%SOURCE_CODE_DIR%\%SIM_SCRIPT%" 
 
-@REM https://www.intel.com/content/www/us/en/docs/programmable/730191/23-2/commands-to-invoke.html
+@REM pause
 
 :: other useful links
-
+:: https://www.intel.com/content/www/us/en/docs/programmable/730191/23-2/commands-to-invoke.html
 :: https://www.intel.com/content/www/us/en/docs/programmable/730191/23-2/generating-a-msim-setup-tcl-simulation.html
 :: https://www.intel.com/content/www/us/en/docs/programmable/730191/23-2/example-my-sim-tcl-simulation-script.html
-
-
-
-@REM vsim.exe -do C:\Users\Brandon\Documents\Git_Repositories\fpga_templates\setup_simulation_project\simulation_script.tcl

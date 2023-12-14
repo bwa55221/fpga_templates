@@ -1,8 +1,32 @@
 # # Begin simulation script
 
 transcript on
-set SOURCE_DIR "C:/Users/Brandon/Documents/Git_Repositories/ssl_debug"
-set QSYS_SIMDIR "C:/Users/Brandon/Documents/Development_Drive/SSL/simulation_proj"
+
+# define procedure to read in params file
+proc readfile {filename} {
+    set fp [open $filename r]
+    set lines [split [read $fp] "\n"]
+    # puts $lines
+    close $fp
+
+    foreach line $lines {
+        if {[regexp {^[^#\r\n].*(?==)} $line var]} {
+
+            if {[regexp {=.*$} $line val]} {
+                set val [string trim $val "="]
+                regsub -all {\\} $val / val
+                puts "set $var $val"
+                variable $var $val
+            }
+        } 
+    }
+}
+
+# read in parameters
+readfile params.txt
+
+# set SOURCE_CODE_DIR "C:/Users/Brandon/Documents/Git_Repositories/ssl_debug"
+# set QSYS_SIMDIR "C:/Users/Brandon/Documents/Development_Drive/SSL/simulation_proj"
 
 # # TOP-LEVEL TEMPLATE - BEGIN
 # #
@@ -62,8 +86,8 @@ if {[file exists rtl_work]} {
 vlib rtl_work
 vmap work rtl_work
 
-vcom -2008 -work work $SOURCE_DIR/hdl/avmm_sync.vhd
-vcom -2008 -work work $SOURCE_DIR/test/tb_avmm_sync.vhd
+vcom -2008 -work work $SOURCE_CODE_DIR/hdl/avmm_sync.vhd
+vcom -2008 -work work $SOURCE_CODE_DIR/test/tb_avmm_sync.vhd
 
 set TOP_LEVEL_NAME tb_avmm_sync
 
